@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-#define LENGTH 2048
+#define BUFFER_SZ 2048
 #define NAME_LEN 32
 
 // Global variables
@@ -37,37 +37,37 @@ void catch_ctrl_c_and_exit(int sig) {
 }
 
 void send_msg_handler() {
-    char message[LENGTH] = {};
-    char buffer[LENGTH + NAME_LEN+2] = {};
+    char buffer[BUFFER_SZ] = {};
+    char message[BUFFER_SZ + NAME_LEN] = {};
+    
     while(1) {
         str_overwrite_stdout();
-        fgets(message, LENGTH, stdin);
-        str_trim_lf(message, LENGTH);
-        if (strcmp(message, "exit") == 0) {
+        fgets(buffer, BUFFER_SZ, stdin);
+        str_trim_lf(buffer, BUFFER_SZ);
+
+        if (strcmp(buffer, "exit") == 0) {
             break;
         } else {
-            sprintf(buffer, "%s: %s\n", name, message);
-            send(sockfd, buffer, strlen(buffer), 0);
+            sprintf(message, "%s: %s\n", name, buffer);
+            send(sockfd, message, strlen(message), 0);
         }
-        bzero(message, LENGTH);
-        bzero(buffer, LENGTH + NAME_LEN);
+        bzero(buffer, BUFFER_SZ);
+        bzero(message, BUFFER_SZ + NAME_LEN);
     }
     catch_ctrl_c_and_exit(2);
 }
 
 void recv_msg_handler() {
-    char message[LENGTH] = {};
+    char message[BUFFER_SZ] = {};
     while (1) {
-        int receive = recv(sockfd, message, LENGTH, 0);
+        int receive = recv(sockfd, message, BUFFER_SZ, 0);
         if (receive > 0) {
             printf("%s", message);
             str_overwrite_stdout();
         } else if (receive == 0) {
             break;
-        } else {
-            // -1
         }
-        memset(message, 0, sizeof(message));
+        bzero(message, BUFFER_SZ);
     }
 }
 
@@ -87,7 +87,7 @@ int main(int argc, char **argv){
     str_trim_lf(name, strlen(name));
 
 
-    if (strlen(name) > NAME_LEN || strlen(name) < 2){
+    if (strlen(name) > NAME_LEN - 1 || strlen(name) < 2){
         printf("Name must be less than 30 and more than 2 characters.\n");
         return EXIT_FAILURE;
     }

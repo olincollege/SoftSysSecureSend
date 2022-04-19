@@ -85,11 +85,12 @@ void send_message(char *s, int uid){
 
     for(int i=0; i<MAX_CLIENTS; i++){
         if(clients[i]){
-            if(clients[1]->uid != uid){
+            if(clients[i] -> uid != uid){
                 if(write(clients[i]->sockfd, s, strlen(s)) < 0){
                     printf("ERROR: write to descriptor failed\n");
                     break;
                 }
+                break;
             }
         }
     }
@@ -107,7 +108,7 @@ void *handle_client(void *arg){
 
     //Name
     if(recv(cli->sockfd, name, NAME_LEN, 0) <= 0 || strlen(name) < 2 || strlen(name) >= NAME_LEN -1){
-        printf("Enter the name correctly\n");
+        printf("Didn't enter the name correctly\n");
         leave_flag = 1;
     } else {
         strcpy(cli->name, name);
@@ -129,7 +130,7 @@ void *handle_client(void *arg){
             if(strlen(buffer) > 0){
                 send_message(buffer, cli->uid);
                 str_trim_lf(buffer, strlen(buffer));
-                printf("%s -> %s", buffer, cli->name);
+                printf("%s\n", buffer);
             }
         } else if (receive == 0 || strcmp(buffer, "exit") == 0){
             sprintf(buffer, "%s has left\n", cli->name);
@@ -178,19 +179,19 @@ int main(int argc, char **argv){
     signal(SIGPIPE, SIG_IGN);
 
     if(setsockopt(listenfd, SOL_SOCKET, (SO_REUSEPORT | SO_REUSEADDR), (char*)&option, sizeof(option)) < 0){
-        printf("ERROR: setsockopt\n");
+        printf("ERROR: setsockopt failure\n");
         return EXIT_FAILURE;
     }
 
     // Bind
     if(bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-        printf("ERROR: bind\n");
+        printf("ERROR: Socket binding failure\n");
         return EXIT_FAILURE;
     }
 
     // Listen
     if(listen(listenfd, 10) < 0){
-        printf("ERROR: listen\n");
+        printf("ERROR: Socket listening failure\n");
         return EXIT_FAILURE;
     }
 
