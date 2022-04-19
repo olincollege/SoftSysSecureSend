@@ -10,7 +10,7 @@
 #include <pthread.h>
 #include <errno.h>
 
-#define MAX_CLIENTS 100
+#define MAX_CLIENTS 10
 #define BUFFER_SZ 2048
 #define NAME_LEN 32
 

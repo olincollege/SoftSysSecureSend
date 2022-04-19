@@ -67,6 +67,7 @@ void send_msg_handler() {
         } 
         // Prints message from other client
         else {
+            // SUPRESSED -Wformat -Overflow Warning
             sprintf(message, "%s: %s\n", name, buffer);
             send(sockfd, message, strlen(message), 0);
         }
