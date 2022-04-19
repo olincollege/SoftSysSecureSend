@@ -36,6 +36,23 @@ void catch_ctrl_c_and_exit(int sig) {
     flag = 1;
 }
 
+// Receive message from server and print onto client
+void recv_msg_handler() {
+    char message[BUFFER_SZ] = {};
+    while (1) {
+        int receive = recv(sockfd, message, BUFFER_SZ, 0);
+        if (receive > 0) {
+            printf("%s", message);
+            str_overwrite_stdout();
+        } 
+        else if (receive == 0) {
+            break;
+        }
+        bzero(message, BUFFER_SZ);
+    }
+}
+
+// Send message to server
 void send_msg_handler() {
     char buffer[BUFFER_SZ] = {};
     char message[BUFFER_SZ + NAME_LEN] = {};
@@ -47,7 +64,9 @@ void send_msg_handler() {
 
         if (strcmp(buffer, "exit") == 0) {
             break;
-        } else {
+        } 
+        // Prints message from other client
+        else {
             sprintf(message, "%s: %s\n", name, buffer);
             send(sockfd, message, strlen(message), 0);
         }
@@ -57,36 +76,25 @@ void send_msg_handler() {
     catch_ctrl_c_and_exit(2);
 }
 
-void recv_msg_handler() {
-    char message[BUFFER_SZ] = {};
-    while (1) {
-        int receive = recv(sockfd, message, BUFFER_SZ, 0);
-        if (receive > 0) {
-            printf("%s", message);
-            str_overwrite_stdout();
-        } else if (receive == 0) {
-            break;
-        }
-        bzero(message, BUFFER_SZ);
-    }
-}
-
 int main(int argc, char **argv){
     if(argc != 2){
         printf("Usage: %s <port>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
+    // Local IP and connect to chosen port
     char *ip = "127.0.0.1";
     int port = atoi(argv[1]);
 
+    // Enable Ctr-C to exit
     signal(SIGINT, catch_ctrl_c_and_exit);
 
+    // Accept Client Name
     printf("Please enter your name: ");
     fgets(name, NAME_LEN, stdin);
     str_trim_lf(name, strlen(name));
 
-
+    // Enforce name rules due to string capacity
     if (strlen(name) > NAME_LEN - 1 || strlen(name) < 2){
         printf("Name must be less than 30 and more than 2 characters.\n");
         return EXIT_FAILURE;
@@ -94,7 +102,7 @@ int main(int argc, char **argv){
 
     struct sockaddr_in server_addr;
 
-    /* Socket settings */
+    // Socket settings (from server.c)
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(ip);
@@ -108,23 +116,26 @@ int main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
-    // Send name
+    // Send Client Name to Server
     send(sockfd, name, NAME_LEN, 0);
 
     printf("=== WELCOME TO THE CHATROOM ===\n");
 
+    // Create thread to send messages
     pthread_t send_msg_thread;
     if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
         printf("ERROR: pthread\n");
         return EXIT_FAILURE;
     }
 
+    // Create thread to receive messages
     pthread_t recv_msg_thread;
     if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
         printf("ERROR: pthread\n");
         return EXIT_FAILURE;
     }
 
+    // Leave if flag to leave is raised
     while (1){
         if(flag){
             printf("\nBye\n");
@@ -132,6 +143,7 @@ int main(int argc, char **argv){
         }
     }
 
+    // Close socket stream
     close(sockfd);
 
     return EXIT_SUCCESS;
