@@ -14,3 +14,12 @@
 - https://github.com/ruchirsharma1993/Chat-application-in-c-using-Socket-programming
 - https://www.youtube.com/watch?v=fNerEo6Lstw&ab_channel=IdiotDeveloper
 - https://github.com/olincollege/SoftSysTerminalConnect4
+
+## File Transferring
+- https://www.youtube.com/watch?v=7d7_G81uews&ab_channel=IdiotDeveloper
+- https://www.youtube.com/watch?v=9g_nMNJhRVk&ab_channel=ThinkandLearn
+- https://stackoverflow.com/questions/30440188/sending-files-from-client-to-server-using-sockets-in-c
+- https://idiotdeveloper.com/file-transfer-using-tcp-socket-in-c/
+- https://stackoverflow.com/questions/11952898/c-send-and-receive-file
+- https://www.youtube.com/watch?v=12F3GBw28Lg&ab_channel=AkNetworks
+- https://forgetcode.com/c/1201-file-transfer-using-tcp
