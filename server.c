@@ -212,7 +212,7 @@ int main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
-    printf("=== WELCOME TO THE CHATROOM ===\n");
+    printf("=== WELCOME TO SEND-SECURE: A SECURE WAY TO SEND MESSAGES LOCALLY ===\n");
 
     while(1){
         socklen_t clilen = sizeof(cli_addr);

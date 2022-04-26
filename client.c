@@ -120,7 +120,7 @@ int main(int argc, char **argv){
     // Send Client Name to Server
     send(sockfd, name, NAME_LEN, 0);
 
-    printf("=== WELCOME TO THE CHATROOM ===\n");
+    printf("=== SUCCESSFULLY ENTERED SEND-SECURE SERVER ===\n");
 
     // Create thread to send messages
     pthread_t send_msg_thread;
@@ -139,7 +139,7 @@ int main(int argc, char **argv){
     // Leave if flag to leave is raised
     while (1){
         if(flag){
-            printf("\nBye\n");
+            printf("\nSucessfuly Exited Chatroom\n");
             break;
         }
     }
