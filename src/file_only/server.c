@@ -11,6 +11,25 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+void write_file(int sockfd){
+	int n;
+	FILE *fp;
+	char *filename = "recv.txt";
+	char buffer[1024];
+
+	fp = fopen(filename, "w");
+	while(1){
+		n = recv(sockfd, buffer, 1024, 0);
+		if (n <= 0){
+			break;
+			return;
+		}
+		fprintf(fp, "%s", buffer);
+		bzero(buffer, 1024);
+	}
+	return;
+}
+
 int main(){
 	// Declare local IP and port
 	char *ip = "127.0.0.1";
