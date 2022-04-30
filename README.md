@@ -10,4 +10,8 @@ A Chat Server that sends messages and files using Sockets from Conan McGannon an
 5. You can add another client by opening a new terminal page and doing Step 3 again.
 6. Exit the application by pressing `Ctrl+C`
 
+## Notes
+
+`src` contains the multi-room chat. `file_only` contains worker code for file transferring.
+
 ## Trello Board: https://trello.com/b/meaJJb8v/softsyssecuresend
