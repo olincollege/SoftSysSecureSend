@@ -77,11 +77,31 @@ void send_msg_handler() {
     catch_ctrl_c_and_exit(2);
 }
 
+void send_file(FILE *fp, int sockfd){
+    char data[1024] = {0};
+
+    // While data is being read
+    while(fgets(data, 1024, fp) != NULL){
+        // Send file through the socket to the server
+        if (send(sockfd, data, sizeof(data), 0) == -1){
+            perror("Error in sending file.");
+            exit(1);
+        }
+        bzero(data, 1024);
+    }
+}
+
 int main(int argc, char **argv){
+    struct sockaddr_in server_addr;
+
     if(argc != 2){
         printf("Usage: %s <port>\n", argv[0]);
         return EXIT_FAILURE;
     }
+
+    // Declare file contents that is being sent
+    FILE *fp;
+    char *filename = "send.txt";
 
     // Local IP and connect to chosen port
     char *ip = "127.0.0.1";
@@ -101,10 +121,14 @@ int main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
-    struct sockaddr_in server_addr;
-
     // Socket settings (from server.c)
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if(sockfd < 0){
+        perror("Error in Creating Socket");
+        exit(1);
+    }
+    printf("Server Socket Created Successfully!\n");
+
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(ip);
     server_addr.sin_port = htons(port);
@@ -113,7 +137,7 @@ int main(int argc, char **argv){
     // Connect to Server
     int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (err == -1) {
-        printf("ERROR: connect\n");
+        printf("Error in Connecting to Socket\n");
         return EXIT_FAILURE;
     }
 
@@ -122,17 +146,28 @@ int main(int argc, char **argv){
 
     printf("=== SUCCESSFULLY ENTERED SEND-SECURE SERVER ===\n");
 
+    // Open the file
+    fp = fopen(filename, "r");
+    if (fp == NULL){
+        perror("Error in Reading File");
+        exit(1);
+    }
+
+    // Call send_file to read file and sent to server
+    send_file(fp, sockfd);
+    printf("File Successfully Sent!\n");
+
     // Create thread to send messages
     pthread_t send_msg_thread;
     if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
-        printf("ERROR: pthread\n");
+        printf("Pthread Error\n");
         return EXIT_FAILURE;
     }
 
     // Create thread to receive messages
     pthread_t recv_msg_thread;
     if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
-        printf("ERROR: pthread\n");
+        printf("Pthread Error\n");
         return EXIT_FAILURE;
     }
 
