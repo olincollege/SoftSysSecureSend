@@ -115,7 +115,7 @@ int main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
-    FILE *fp;
+    FILE *fp, *fp2;
     char *filename = "send.txt";
 
     struct sockaddr_in server_addr;
@@ -141,13 +141,25 @@ int main(int argc, char **argv){
         exit(1);
     }
 
+    // Read incoming files
+    char a;
+    fp2 = fopen("receive.txt","w");
+    a = fgetc(fp);
+    while ((a = fgetc(fp)) != EOF)
+    {
+        fputc(a, fp2);
+    }
+
     // Send Client Name to Server
     send(sockfd, name, NAME_LEN, 0);
 
     // Call send_file to read file and sent to server
     send_file(fp, sockfd);
     printf("File Successfully Sent!\n");
-    
+
+    fclose(fp);
+    fclose(fp2);
+
     printf("=== SUCCESSFULLY ENTERED SEND-SECURE SERVER ===\n");
 
     // Create thread to send messages
