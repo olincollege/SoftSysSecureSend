@@ -17,6 +17,20 @@ volatile sig_atomic_t flag = 0;
 int sockfd = 0;
 char name[NAME_LEN];
 
+void send_file(FILE *fp, int sockfd){
+    char data[BUFFER_SZ] = {0};
+
+    // While data is being read
+    while(fgets(data, BUFFER_SZ, fp) != NULL){
+        // Send file through the socket to the server
+        if (send(sockfd, data, sizeof(data), 0) == -1){
+            perror("Error in sending file.");
+            exit(1);
+        }
+        bzero(data, BUFFER_SZ);
+    }
+}
+
 void str_overwrite_stdout() {
     printf("%s", "> ");
     fflush(stdout);
@@ -101,6 +115,9 @@ int main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
+    FILE *fp;
+    char *filename = "send.txt";
+
     struct sockaddr_in server_addr;
 
     // Socket settings (from server.c)
@@ -117,9 +134,20 @@ int main(int argc, char **argv){
         return EXIT_FAILURE;
     }
 
+    // Open the file
+    fp = fopen(filename, "r");
+    if (fp == NULL){
+        perror("Error in Reading File");
+        exit(1);
+    }
+
     // Send Client Name to Server
     send(sockfd, name, NAME_LEN, 0);
 
+    // Call send_file to read file and sent to server
+    send_file(fp, sockfd);
+    printf("File Successfully Sent!\n");
+    
     printf("=== SUCCESSFULLY ENTERED SEND-SECURE SERVER ===\n");
 
     // Create thread to send messages

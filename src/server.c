@@ -25,6 +25,28 @@ typedef struct{
     char name[NAME_LEN];
 } client_t;
 
+void receive_file(int sockfd){
+    int n;
+    FILE *fp;
+    char buffer[BUFFER_SZ];
+
+    // Create a new file (if not pre-existing)
+    fp = fopen("receive.txt", "w");
+    // While data is received
+    while(1){
+        // Receive data through socket
+        n = recv(sockfd, buffer, BUFFER_SZ, 0);
+        if (n <= 0){
+            break;
+            return;
+        }
+        // Save data to file
+        fprintf(fp, "%s", buffer);
+        bzero(buffer, BUFFER_SZ);
+    }
+    // return;
+}
+
 // Create total number of clients
 client_t *clients[MAX_CLIENTS];
 
@@ -178,6 +200,7 @@ int main(int argc, char **argv){
 
     int option = 1;
     int listenfd = 0, connfd = 0;
+    socklen_t addr_size;
 
     // Create sockets for server and client
     struct sockaddr_in serv_addr;
@@ -215,9 +238,9 @@ int main(int argc, char **argv){
     printf("=== WELCOME TO SEND-SECURE: A SECURE WAY TO SEND MESSAGES LOCALLY ===\n");
 
     while(1){
-        socklen_t clilen = sizeof(cli_addr);
+        addr_size = sizeof(cli_addr);
         // Accept client if found
-        connfd = accept(listenfd, (struct sockaddr*)&cli_addr, &clilen);
+        connfd = accept(listenfd, (struct sockaddr*)&cli_addr, &addr_size);
 
         // Check if MAX_CLIENTS have been reached
         if((cli_count + 1) == MAX_CLIENTS){
@@ -236,6 +259,9 @@ int main(int argc, char **argv){
         // Add client to queue
         queue_add(cli);
         pthread_create(&tid, NULL, &handle_client, (void*)cli);
+
+        // receive_file(cli->sockfd);
+        printf("File Received Successfully!\n");
 
         // Sleep in thread reduces CPU usage of thread
         sleep(1);
