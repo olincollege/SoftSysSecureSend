@@ -116,7 +116,7 @@ void send_message(char *s, int uid){
             if(clients[i] -> uid != uid){
                 // Write through socket, if fail return error
                 if(write(clients[i]->sockfd, s, strlen(s)) < 0){
-                    printf("ERROR: write to descriptor failed\n");
+                    printf("Error in Sending Message to Clients\n");
                     break;
                 }
                 break;
@@ -137,11 +137,11 @@ void *handle_client(void *arg){
 
     // Get name of client connection and return if connection successful
     if(recv(cli->sockfd, name, NAME_LEN, 0) <= 0 || strlen(name) < 2 || strlen(name) >= NAME_LEN -1){
-        printf("Didn't enter the name correctly\n");
+        printf("Error in Invalid Name Input\n");
         leave_flag = 1;
     } else {
         strcpy(cli->name, name);
-        sprintf(buffer, "%s has joined\n", cli->name);
+        sprintf(buffer, "%s has joined!\n", cli->name);
         printf("%s", buffer);
         send_message(buffer, cli->uid);
     }
@@ -174,7 +174,7 @@ void *handle_client(void *arg){
         // No connection
         } 
         else{
-            printf("ERROR: -1\n");
+            printf("Error in Client Not Found\n");
             leave_flag = 1;
         }
         bzero(buffer, BUFFER_SZ);
@@ -192,7 +192,7 @@ void *handle_client(void *arg){
 int main(int argc, char **argv){
     if(argc != 2){
         printf("Usage: %s <port>\n", argv[0]);
-        return EXIT_FAILURE;
+        exit(1);
     }
 
     char *ip = "127.0.0.1";
@@ -218,24 +218,24 @@ int main(int argc, char **argv){
 
     // Reuse socket if already connected once
     if(setsockopt(listenfd, SOL_SOCKET, (SO_REUSEPORT | SO_REUSEADDR), (char*)&option, sizeof(option)) < 0){
-        printf("ERROR: setsockopt failure\n");
-        return EXIT_FAILURE;
+        printf("Error in Reusing Socket\n");
+        exit(1);
     }
 
     // Bind to port
     if(bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-        printf("ERROR: Socket binding failure\n");
-        return EXIT_FAILURE;
+        printf("Error in Binding to Socket\n");
+        exit(1);
     }
 
     // Listen for clients
     if(listen(listenfd, 10) < 0){
         // Listen for 10 seconds
-        printf("ERROR: Socket listening failure\n");
-        return EXIT_FAILURE;
+        printf("Error in Listening to Client\n");
+        exit(1);
     }
 
-    printf("=== WELCOME TO SEND-SECURE: A SECURE WAY TO SEND MESSAGES LOCALLY ===\n");
+    printf("=== WELCOME TO SEND-SECURE: A SECURE WAY TO SEND MESSAGES ===\n");
 
     while(1){
         addr_size = sizeof(cli_addr);
@@ -244,7 +244,7 @@ int main(int argc, char **argv){
 
         // Check if MAX_CLIENTS have been reached
         if((cli_count + 1) == MAX_CLIENTS){
-            printf("Maximum clients connected. Connection Rejected: ");
+            printf("Error in Maximum clients connected reached: ");
             print_ip_addr(cli_addr);
             close(connfd);
             continue;
@@ -266,5 +266,5 @@ int main(int argc, char **argv){
         // Sleep in thread reduces CPU usage of thread
         sleep(1);
     }
-    return EXIT_SUCCESS;
+    return 0;
 }

@@ -1,8 +1,8 @@
 /*  
     client.c
 
-    Client Side
-    Reads text file and sends it to server
+    Client Side that connects to server and sends in client name and messages
+    Reads text file, sends it to server for other clients to see
 */
 
 #include <stdio.h>
@@ -101,7 +101,7 @@ void send_msg_handler() {
 int main(int argc, char **argv){
     if(argc != 2){
         printf("Usage: %s <port>\n", argv[0]);
-        return EXIT_FAILURE;
+        exit(1);
     }
 
     // Local IP and connect to chosen port
@@ -119,7 +119,7 @@ int main(int argc, char **argv){
     // Enforce name rules due to string capacity
     if (strlen(name) > NAME_LEN - 1 || strlen(name) < 2){
         printf("Name must be less than 30 and more than 2 characters.\n");
-        return EXIT_FAILURE;
+        exit(1);
     }
 
     FILE *fp, *fp2;
@@ -137,9 +137,10 @@ int main(int argc, char **argv){
     // Connect to Server
     int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (err == -1) {
-        printf("ERROR: connect\n");
-        return EXIT_FAILURE;
+        printf("Error in Creating Socket\n");
+        exit(1);
     }
+    printf("Connected to Server Successfully!\n");
 
     // Open the file
     fp = fopen(filename, "r");
@@ -167,26 +168,26 @@ int main(int argc, char **argv){
     fclose(fp);
     fclose(fp2);
 
-    printf("=== SUCCESSFULLY ENTERED SEND-SECURE SERVER ===\n");
+    printf("=== WELCOME TO SEND-SECURE: A SECURE WAY TO SEND YOUR IMPORTANT FILES AND MESSAGES ===\n");
 
     // Create thread to send messages
     pthread_t send_msg_thread;
     if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
-        printf("ERROR: pthread\n");
-        return EXIT_FAILURE;
+        printf("Error in Creating Pthread\n");
+        exit(1);
     }
 
     // Create thread to receive messages
     pthread_t recv_msg_thread;
     if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
-        printf("ERROR: pthread\n");
-        return EXIT_FAILURE;
+        printf("Error in Creating Pthread\n");
+        exit(1);
     }
 
     // Leave if flag to leave is raised
     while (1){
         if(flag){
-            printf("\nSucessfuly Exited Chatroom\n");
+            printf("\nSucessfully Exited SEND-SECURE\n");
             break;
         }
     }
@@ -194,5 +195,5 @@ int main(int argc, char **argv){
     // Close socket stream
     close(sockfd);
 
-    return EXIT_SUCCESS;
+    return 0;
 }
