@@ -24,17 +24,17 @@ You can view the full list of resources we used and referenced in the [resources
 
 6) You will probably want to present a few code snippets that present the most important parts of your implementation.  You should not paste in large chunks of code or put them in the Appendix.  You can provide a link to a code file, but the report should stand alone; I should not have to read your code files to understand what you did.
 
-For the implementation, unlike our last project where we were closer to the lower echelon of our deliverables, we were able to reach the upper echelon, although not the top, of our deliverables. We implemented a chatroom that multiple clients can connect to and send messages in. When the client sends a message through the chatroom, 
+For the implementation, unlike our last project where we were closer to the lower echelon of our deliverables, we were able to reach the upper echelon, although not the top, of our deliverables. And throughout our project, we pivoted our scope of the project. Originally, we wanted this project to be primarily about file transferring, but we decided that it would make more sense to have a multi-client chat room to simulatt a real group chat. So for our submission, we implemented a chatroom that multiple clients can connect to and send messages in. Clients are able to name themselves, which will appear on the server terminal. When a client sends a message, their message will show up on the server as well as the other clients that are connected to it. We went above and beyond for the messaging server/client, something we are extremely proud of.
 
-Multi-User Chatroom Implemented Successfully. After around 12-13 users there were problems when it came to (most likely due to RAM), so we made a manual cap at 10 users. Instead of having to fill more people, we decided to leave the cap at 10.
+`Show images of implementation`
 
-File transferring was a lot harder to implement. Originally, we were planning to be able to send files such as images and videos through
+However, we also wanted to have some sort of file transferring capabilities as well since that was our original goal for our project. Given our time, instead of our clients being able to send images as well, we scaled down the file transferring to only text files through the socket.
 
-However, that did not go as planned, something we did not have time to implement since we had about a week and spent most of our time doing the multi-room chat application.
+`Show images of implementation`
 
-Fail safe implemented in case server could not read from client side the messages
+And with that, clients automatically send files when they connect to the client onto the server to simulate other clients being able to see the files sent as well. They can also send text messages to each other through the server to simulate a real group chat.
 
-We could have 
+`Show images of working`
 
 Compared to last project, we are very happy how this project turned out. Although there are some bugs we would have liked to patch out, whether it's the server not being able to take more than about a dozen clients or occasionally failing to read the file the client sent over, we are proud that we were able to (almost) reach the upper echelon of what we wanted to create at the beginning stages of this project. And overall, we are most proud that we were able to apply our skills from class, especially the material more recently, into an expanded project that cement our understanding of the topic.
 
