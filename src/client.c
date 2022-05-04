@@ -1,3 +1,10 @@
+/*  
+    client.c
+
+    Client Side
+    Reads text file and sends it to server
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -13,7 +13,7 @@ For research on our topic, we consulted networking programming documentation. We
 - and [GeeksforGeeks' "Socket Programming in C/C++" Article](https://www.geeksforgeeks.org/socket-programming-cc/#:~:text=What%20is%20socket%20programming%3F,reaches%20out%20to%20the%20server)
 
 To get into more specific on chat applications, we used
-- Head First C Chapter 11 (Our most important resource since it easily points out the process of the client/server relationship through BLAB)
+- Head First C Chapter 11
 - [Idiot Developer's Video Series on Socket Programming](https://www.youtube.com/watch?v=hptViBE23fI&list=PLHYn9gDxQOpizt0_tvN7nJHP_70il0YJm&ab_channel=IdiotDeveloper)
 
 You can view the full list of resources we used and referenced in the [resources.md](https://github.com/olincollege/SoftSysSecureSend/blob/main/reports/resources.md) file.
@@ -23,6 +23,8 @@ You can view the full list of resources we used and referenced in the [resources
 5) Explain at least one design decision you made.  Were there several ways to do something?  Which did you choose and why?
 
 6) You will probably want to present a few code snippets that present the most important parts of your implementation.  You should not paste in large chunks of code or put them in the Appendix.  You can provide a link to a code file, but the report should stand alone; I should not have to read your code files to understand what you did.
+
+For the implementation, unlike our last project where we were closer to the lower echelon of our deliverables, we were able to reach the upper echelon, although not the top, of our deliverables. We implemented a chatroom that multiple clients can connect to and send messages in. When the client sends a message through the chatroom, 
 
 Multi-User Chatroom Implemented Successfully. After around 12-13 users there were problems when it came to (most likely due to RAM), so we made a manual cap at 10 users. Instead of having to fill more people, we decided to leave the cap at 10.
 
