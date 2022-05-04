@@ -13,7 +13,7 @@ For research on our topic, we consulted networking programming documentation. We
 - and [GeeksforGeeks' "Socket Programming in C/C++" Article](https://www.geeksforgeeks.org/socket-programming-cc/#:~:text=What%20is%20socket%20programming%3F,reaches%20out%20to%20the%20server)
 
 To get into more specific on chat applications, we used
-- Head First C Chapter 11
+- Head First C Chapter 11 (Our most important resource since it easily points out the process of the client/server relationship through BLAB)
 - [Idiot Developer's Video Series on Socket Programming](https://www.youtube.com/watch?v=hptViBE23fI&list=PLHYn9gDxQOpizt0_tvN7nJHP_70il0YJm&ab_channel=IdiotDeveloper)
 
 You can view the full list of resources we used and referenced in the [resources.md](https://github.com/olincollege/SoftSysSecureSend/blob/main/reports/resources.md) file.
@@ -24,26 +24,18 @@ You can view the full list of resources we used and referenced in the [resources
 
 6) You will probably want to present a few code snippets that present the most important parts of your implementation.  You should not paste in large chunks of code or put them in the Appendix.  You can provide a link to a code file, but the report should stand alone; I should not have to read your code files to understand what you did.
 
-7) Reflect on the outcome of the project in terms of your learning goals.  Between the lower and upper bounds you identified in the proposal, where did your project end up?  Did you achieve your learning goals?
+Multi-User Chatroom Implemented Successfully. After around 12-13 users there were problems when it came to (most likely due to RAM), so we made a manual cap at 10 users. Instead of having to fill more people, we decided to leave the cap at 10.
 
-### Lisperers Answer (for reference):
+File transferring was a lot harder to implement. Originally, we were planning to be able to send files such as images and videos through
 
-Overall, we are satisfied with our work completing the Lisp-based calculator. While we were not able to reach our goals of building a full-fledged Lisp language that can have programs be built off of it, we are satisfied more in the progress we made learning about the Lisps, its uses, history, and implementation. We learned a lot when it comes to special ways in parsing through Symbolic Expressions and Quoted Expressions within a Lisp environment. In our next steps, we hope to continue this project further to include string and conditional implementations as well as implementing a standard library of functions so a future user may be able to implement a project using the language.
+However, that did not go as planned, something we did not have time to implement since we had about a week and spent most of our time doing the multi-room chat application.
 
-But with where we are at right now, through all that learning and progress we made in this month, we were able to have an implementation that can take in input, parse it for specific commands, compute mathematical operations, and save operations and integers into functions and variables respectively.
+Fail safe implemented in case server could not read from client side the messages
 
-Audience: Target an external audience that wants to know what you did and why.  More specifically, think about students in future versions of SoftSys who might want to work on a related project.  Also think about people who might look at your online portfolio to see what you know, what you can do, and how well you can communicate.
+We could have 
 
- You don't have to answer the questions above in exactly that order, but the logical flow of your report should make sense.  Do not paste the questions into your final report. 
+Compared to last project, we are very happy how this project turned out. Although there are some bugs we would have liked to patch out, whether it's the server not being able to take more than about a dozen clients or occasionally failing to read the file the client sent over, we are proud that we were able to (almost) reach the upper echelon of what we wanted to create at the beginning stages of this project. And overall, we are most proud that we were able to apply our skills from class, especially the material more recently, into an expanded project that cement our understanding of the topic.
 
-## Submission Mechanics
+For future implemenations, outside of debugging would defintely go into fleshing out the file transfer to include images and videos but more excitingly, a GUI. Right now, the project is run on terminal, but we think being able to have a chat application built simiarly to Telegram or Messenger would be fun to work on as well as a great opportunity to make a systems application which would be great experience to have.
 
-1) In your project report, you should already have a folder called "reports" that contains a Markdown document called "update.md".  Make a copy of "update.md" called "report.md"
-
-2) At the top of this document, give your report a title that at least suggests the topic of the project.  The title should not contain the name of the class or the words "project" or "report".
-
-3) List the complete names of all members of the team. 
-
-4) Answer the questions in the Content section, above. Use typesetting features to indicate the organization of the document.  Do not include the questions as part of your document.
-
-5) Complete your update, view it on GitHub, and copy the GitHub URL.  Then paste the URL in the submission space below.
+We were able to apply our skills from class, especially the material more recently, into an expanded project.
