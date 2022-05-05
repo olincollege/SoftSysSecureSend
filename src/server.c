@@ -258,7 +258,6 @@ int main(int argc, char **argv){
         queue_add(cli);
         pthread_create(&tid, NULL, &handle_client, (void*)cli);
 
-        receive_file(cli->sockfd);
         printf("File Received Successfully!\n");
 
         // Sleep in thread reduces CPU usage of thread
