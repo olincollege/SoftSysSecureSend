@@ -35,23 +35,23 @@ To get a general structure of our program, our code is seperated by `server.c` w
 We can begin implementing the architecture within our `server.c`, where we create server and client sockets that allows communication by sending and receiving data over the network.
 
 ```C
-    char *ip = "127.0.0.1";
-    int port = atoi(argv[1]);
+char *ip = "127.0.0.1";
+int port = atoi(argv[1]);
 
-    int option = 1;
-    int listenfd = 0, connfd = 0;
-    socklen_t addr_size;
+int option = 1;
+int listenfd = 0, connfd = 0;
+socklen_t addr_size;
 
-    // Create sockets for server and client
-    struct sockaddr_in serv_addr;
-    struct sockaddr_in cli_addr;
-    pthread_t tid;
+// Create sockets for server and client
+struct sockaddr_in serv_addr;
+struct sockaddr_in cli_addr;
+pthread_t tid;
 
-    // Socket Settings
-    listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = inet_addr(ip);
-    serv_addr.sin_port = htons(port);
+// Socket Settings
+listenfd = socket(AF_INET, SOCK_STREAM, 0);
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_addr.s_addr = inet_addr(ip);
+serv_addr.sin_port = htons(port);
 ```
 
 The process of a server implementation can be easily explained through the **BLAB** steps acronym.
@@ -59,22 +59,22 @@ The process of a server implementation can be easily explained through the **BLA
 `B`: *Bind* the TCP socket to the IP and port. (Make sure to also catch errors!)
 
 ```C
-    // Bind to port
-    if(bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-        printf("Error in Binding to Socket\n");
-        exit(1);
-    }
+// Bind to port
+if(bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
+    printf("Error in Binding to Socket\n");
+    exit(1);
+}
 ```
 
 `L`: *Listen* and wait for clients
 
 ```C
-    // Listen for clients
-    if(listen(listenfd, 10) < 0){
-        // Listen for 10 seconds
-        printf("Error in Listening to Client\n");
-        exit(1);
-    }
+// Listen for clients
+if(listen(listenfd, 10) < 0){
+    // Listen for 10 seconds
+    printf("Error in Listening to Client\n");
+    exit(1);
+}
 ```
 
 `A`: When a client connects to the same IP and port as the server, *accept* the client and server connection is established
@@ -88,18 +88,18 @@ The process of a server implementation can be easily explained through the **BLA
 And since we are handling a multi-user chatroom, we want to create multiple clients. To do so, we can create a queue of additional clients to the server to dynamically add clients to the chat-based room. This is also where we are able to receive the file from the socket
 
 ```C
-	// Create client in server
-    client_t *cli = (client_t *)malloc(sizeof(client_t));
-    cli->address = cli_addr;
-    cli->sockfd = connfd;
-    cli->uid = uid++;
+// Create client in server
+client_t *cli = (client_t *)malloc(sizeof(client_t));
+cli->address = cli_addr;
+cli->sockfd = connfd;
+cli->uid = uid++;
 
-	// Add client to queue
-    queue_add(cli);
-    pthread_create(&tid, NULL, &handle_client, (void*)cli);
+// Add client to queue
+queue_add(cli);
+pthread_create(&tid, NULL, &handle_client, (void*)cli);
 
-    // Receive file from the client socket
-    receive_file(cli->sockfd);
+// Receive file from the client socket
+receive_file(cli->sockfd);
 ``` 
 
 We decided to cap the limit of allowed clients onto the server because past about 11 or 12, the server starts not being able to send messages to other clients from other clients messages. It is a small bug that we decided not to fix, and decided to cap it at 10 members which is still a lot of people.
@@ -109,53 +109,53 @@ Then on the client side on file `client.c`, we can break down the process of est
 But before we do that, similarly to the server, we create a socket to connect to the server. We also establish the name of the client which is inputted by the user.
 
 ```C
-	// Local IP and connect to chosen port
-    char *ip = "127.0.0.1";
-    int port = atoi(argv[1]);
+// Local IP and connect to chosen port
+char *ip = "127.0.0.1";
+int port = atoi(argv[1]);
 
-    // Enable Ctr-C to exit
-    signal(SIGINT, catch_ctrl_c_and_exit);
+// Enable Ctr-C to exit
+signal(SIGINT, catch_ctrl_c_and_exit);
 
-    struct sockaddr_in server_addr;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr(ip);
-    server_addr.sin_port = htons(port);
+struct sockaddr_in server_addr;
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+server_addr.sin_family = AF_INET;
+server_addr.sin_addr.s_addr = inet_addr(ip);
+server_addr.sin_port = htons(port);
 ```
 
 Next, we can connect our client to the server and send our information and file to the server when we connect to it.
 
 ```C
-	int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
-    if (err == -1) {
-        printf("Error in Creating Socket\n");
-        exit(1);
-    }
-    printf("Connected to Server Successfully!\n");
+int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+if (err == -1) {
+    printf("Error in Creating Socket\n");
+    exit(1);
+}
+printf("Connected to Server Successfully!\n");
 
-    // Send Client Name to Server
-    send(sockfd, name, NAME_LEN, 0);
+// Send Client Name to Server
+send(sockfd, name, NAME_LEN, 0);
 
-    // Send file to Server
-    send_file(fp, sockfd);
+// Send file to Server
+send_file(fp, sockfd);
 ```
 
 We also have to create a thread to be able to send messages because many clients connected to the server will be sending over and receiving messages at the same time.
 
 ```C
-    // Create thread to send messages
-    pthread_t send_msg_thread;
-    if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
-        printf("Error in Creating Pthread\n");
-        exit(1);
-    }
+// Create thread to send messages
+pthread_t send_msg_thread;
+if(pthread_create(&send_msg_thread, NULL, (void *) send_msg_handler, NULL) != 0){
+    printf("Error in Creating Pthread\n");
+    exit(1);
+}
 
-    // Create thread to receive messages
-    pthread_t recv_msg_thread;
-    if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
-        printf("Error in Creating Pthread\n");
-        exit(1);
-    }
+// Create thread to receive messages
+pthread_t recv_msg_thread;
+if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
+    printf("Error in Creating Pthread\n");
+    exit(1);
+}
 ```
 
 ### File Transfer Implementation
@@ -165,66 +165,66 @@ As for the file transferring, since we decided to go ahead with only text file t
 On the `client.c` side, we open the file (in this repository called `send.txt`) and read the contents of the file. We then can send the file through the TCP socket, where the server will now read its contents through the `send_file` function.
 
 ```C
-	void send_file(FILE *fp, int sockfd){
-	    char data[BUFFER_SZ] = {0};
+void send_file(FILE *fp, int sockfd){
+    char data[BUFFER_SZ] = {0};
 
-	    // While data is being read
-	    while(fgets(data, BUFFER_SZ, fp) != NULL){
-	        // Send file through the socket to the server
-	        if (send(sockfd, data, sizeof(data), 0) == -1){
-	            perror("Error in sending file.");
-	            exit(1);
-	        }
-	        bzero(data, BUFFER_SZ);
-	    }
-	}
-
-	FILE *fp, *fp2;
-    char *filename = "send.txt";
-
-	// Open the file
-    fp = fopen(filename, "r");
-    if (fp == NULL){
-        perror("Error in Reading File");
-        exit(1);
+    // While data is being read
+    while(fgets(data, BUFFER_SZ, fp) != NULL){
+        // Send file through the socket to the server
+        if (send(sockfd, data, sizeof(data), 0) == -1){
+            perror("Error in sending file.");
+            exit(1);
+        }
+        bzero(data, BUFFER_SZ);
     }
+}
 
-    // Send Client Name to Server
-    send(sockfd, name, NAME_LEN, 0);
+FILE *fp, *fp2;
+char *filename = "send.txt";
 
-    // Call send_file to read file and sent to server
-    send_file(fp, sockfd);
-    printf("File Successfully Sent!\n");
+// Open the file
+fp = fopen(filename, "r");
+if (fp == NULL){
+    perror("Error in Reading File");
+    exit(1);
+}
 
-    fclose(fp);
+// Send Client Name to Server
+send(sockfd, name, NAME_LEN, 0);
+
+// Call send_file to read file and sent to server
+send_file(fp, sockfd);
+printf("File Successfully Sent!\n");
+
+fclose(fp);
 ```
 
 On the `server.c` side, after accepting the connection from the client, it can start accepting files from the clients. The server will first create a new file, then when it receives the data through the TCP socket from the client, it will print the information onto the new file the server created.
 
 ```C
-	void receive_file(int sockfd){
-	    int n;
-	    FILE *fp;
-	    char buffer[BUFFER_SZ];
+void receive_file(int sockfd){
+    int n;
+    FILE *fp;
+    char buffer[BUFFER_SZ];
 
-	    // Create a new file (if not pre-existing)
-	    fp = fopen("receive.txt", "w");
-	    // While data is received
-	    while(1){
-	        // Receive data through socket
-	        n = recv(sockfd, buffer, BUFFER_SZ, 0);
-	        if (n <= 0){
-	            break;
-	            return;
-	        }
-	        // Save data to file
-	        fprintf(fp, "%s", buffer);
-	        bzero(buffer, BUFFER_SZ);
-	    }
-	}
+    // Create a new file (if not pre-existing)
+    fp = fopen("receive.txt", "w");
+    // While data is received
+    while(1){
+        // Receive data through socket
+        n = recv(sockfd, buffer, BUFFER_SZ, 0);
+        if (n <= 0){
+            break;
+            return;
+        }
+        // Save data to file
+        fprintf(fp, "%s", buffer);
+        bzero(buffer, BUFFER_SZ);
+    }
+}
 
-	receive_file(cli->sockfd);
-    printf("File Received Successfully!\n");
+receive_file(cli->sockfd);
+printf("File Received Successfully!\n");
 ```
 
 You can view the implementation of the multi-chat room system with file transferring capabilities in [server.c](https://github.com/olincollege/SoftSysSecureSend/blob/main/src/server.c) and [client.c](https://github.com/olincollege/SoftSysSecureSend/blob/main/src/client.c).
