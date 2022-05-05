@@ -1,3 +1,11 @@
+/*  
+    server.c
+
+    Server Side receives connections from client
+    Client can send messages to the server and server communicates those messages to the other connected clients
+    Server also receives files and saves it to the directory for other clients to see (simulated file transfer)
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,7 +52,6 @@ void receive_file(int sockfd){
         fprintf(fp, "%s", buffer);
         bzero(buffer, BUFFER_SZ);
     }
-    // return;
 }
 
 // Create total number of clients
@@ -53,11 +60,13 @@ client_t *clients[MAX_CLIENTS];
 // Sends messages to the server through clients
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+// Add `>` character after each message to indicate who is writing the message
 void str_overwrite_stdout(){
     printf("\r%s", "> ");
     fflush(stdout);
 }
 
+// Format message string
 void str_trim_lf(char* arr, int length){
     for(int i=0; i<length; i++){
         if(arr[i] == '\n'){
@@ -65,16 +74,6 @@ void str_trim_lf(char* arr, int length){
             break;
         }
     }
-}
-
-// Print ip address proper format
-void print_ip_addr(struct sockaddr_in addr){
-    printf(
-    "%d.%d.%d.%d",
-    addr.sin_addr.s_addr & 0xff,
-    (addr.sin_addr.s_addr & 0xff00) >> 8,
-    (addr.sin_addr.s_addr & 0xff0000) >> 16,
-    (addr.sin_addr.s_addr & 0xff000000) >> 24);
 }
 
 // Add clients to the queue stack
@@ -244,8 +243,7 @@ int main(int argc, char **argv){
 
         // Check if MAX_CLIENTS have been reached
         if((cli_count + 1) == MAX_CLIENTS){
-            printf("Error in Maximum clients connected reached: ");
-            print_ip_addr(cli_addr);
+            printf("Error in Maximum clients connected reached");;
             close(connfd);
             continue;
         }
@@ -260,7 +258,7 @@ int main(int argc, char **argv){
         queue_add(cli);
         pthread_create(&tid, NULL, &handle_client, (void*)cli);
 
-        // receive_file(cli->sockfd);
+        receive_file(cli->sockfd);
         printf("File Received Successfully!\n");
 
         // Sleep in thread reduces CPU usage of thread
