@@ -24,7 +24,7 @@ You can view the full list of resources we used and referenced in the [resources
 
 ## Code Implementation
 
-For the implementation, unlike our last project where we were closer to the lower echelon of our deliverables, we were able to reach the upper echelon, although not the top, of our deliverables. And throughout our project, we pivoted our scope of the project. Originally, we wanted this project to be primarily about file transferring, but we decided that it would make more sense to have a TCP multi-client-server chat room to simulatt a real group chat. So for our submission, we implemented a chatroom that multiple clients can connect to and send messages in. Clients are able to name themselves, which will appear on the server terminal. When a client sends a message, their message will show up on the server as well as the other clients that are connected to it. We went above and beyond for the messaging server/client, something we are extremely proud of.
+For the implementation, unlike our last project, where we were closer to the lower echelon of our deliverables, we were able to reach the upper echelon, although not the top, of our deliverables. And throughout our project, we pivoted our scope of the project. Initially, we wanted this project to be primarily about file transferring, but we decided that it would make more sense to have a TCP multi-client-server chat room to simulate a real group chat. So for our submission, we implemented a chatroom that multiple clients can connect to and send messages. Clients can name themselves, which will appear on the server terminal. When a client sends a message, their statement will show up on the server and the other clients connected to it. So we went above and beyond for the messaging server/client, something we are incredibly proud of.
 
 However, we also wanted to have some sort of file transferring capabilities as well since that was our original goal for our project. Given our time, instead of our clients being able to send images as well, we scaled down the file transferring to only text files through the socket.
 
@@ -102,7 +102,7 @@ pthread_create(&tid, NULL, &handle_client, (void*)cli);
 receive_file(cli->sockfd);
 ``` 
 
-We decided to cap the limit of allowed clients onto the server because past about 11 or 12, the server starts not being able to send messages to other clients from other clients messages. It is a small bug that we decided not to fix, and decided to cap it at 10 members which is still a lot of people.
+We decided to cap the limit of allowed clients onto the server because past about 11 or 12, the server starts not being able to send messages to other clients from other clients messages. It is a minor bug that we decided not to fix and cap it at 10 members, which is still many people.
 
 Then on the client side on file `client.c`, we can break down the process of establishing a client to connect to the server in two simple steps: `connect` and `send`.
 
@@ -253,8 +253,6 @@ And with that, clients automatically send files when they connect to the client 
 
 ## Conclusion
 
-Compared to last project, we are very happy how this project turned out. Although there are some bugs we would have liked to patch out, whether it's the server not being able to take more than about a dozen clients or occasionally failing to read the file the client sent over, we are proud that we were able to (almost) reach the upper echelon of what we wanted to create at the beginning stages of this project. And overall, we are most proud that we were able to apply our skills from class, especially the material more recently, into an expanded project that cement our understanding of the topic.
+We are pleased with how this project turned out compared to the last project. Although we would have liked to patch out some bugs, we are proud that we were able to (almost) reach the upper echelon of what we wanted to create at the beginning stages of this project. And overall, we are most proud that we were able to apply our skills from class, especially the material more recently, into an expanded project that cemented our understanding of the topic.
 
-For future implemenations, outside of debugging would defintely go into fleshing out the file transfer to include images and videos but more excitingly, a GUI. Right now, the project is run on terminal, but we think being able to have a chat application built simiarly to Telegram or Messenger would be fun to work on as well as a great opportunity to make a systems application which would be great experience to have.
-
-We were able to apply our skills from class, especially the material more recently, into an expanded project.
+For future implementations, outside of debugging, we would go into fleshing out the file transfer to include images and videos but, more excitingly, a GUI. Right now, the project runs on the terminal. Still, we think having a chat application built similarly to Telegram or Messenger would be fun to work on and an excellent opportunity to make an application that would be a great experience to have.
