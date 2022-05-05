@@ -104,8 +104,6 @@ And since we are handling a multi-user chatroom, we want to create multiple clie
 
 We decided to cap the limit of allowed clients onto the server because past about 11 or 12, the server starts not being able to send messages to other clients from other clients messages. It is a small bug that we decided not to fix, and decided to cap it at 10 members which is still a lot of people.
 
-If you want the full implementation, check out [server.c](https://github.com/olincollege/SoftSysSecureSend/blob/main/src/server.c)
-
 Then on the client side on file `client.c`, we can break down the process of establishing a client to connect to the server in two simple steps: `connect` and `send`.
 
 But before we do that, similarly to the server, we create a socket to connect to the server. We also establish the name of the client which is inputted by the user.
@@ -160,11 +158,76 @@ We also have to create a thread to be able to send messages because many clients
     }
 ```
 
-If you want the full implementation, check out [client.c](https://github.com/olincollege/SoftSysSecureSend/blob/main/src/server.c)
-
 ### File Transfer Implementation
 
+As for the file transferring, since we decided to go ahead with only text file transfers, we decided to go ahead with it by reading the contents of the files and copying them into another file that the server creates to simulate what sending a file is like.
 
+On the `client.c` side, we open the file (in this repository called `send.txt`) and read the contents of the file. We then can send the file through the TCP socket, where the server will now read its contents through the `send_file` function.
+
+```C
+	void send_file(FILE *fp, int sockfd){
+	    char data[BUFFER_SZ] = {0};
+
+	    // While data is being read
+	    while(fgets(data, BUFFER_SZ, fp) != NULL){
+	        // Send file through the socket to the server
+	        if (send(sockfd, data, sizeof(data), 0) == -1){
+	            perror("Error in sending file.");
+	            exit(1);
+	        }
+	        bzero(data, BUFFER_SZ);
+	    }
+	}
+
+	FILE *fp, *fp2;
+    char *filename = "send.txt";
+
+	// Open the file
+    fp = fopen(filename, "r");
+    if (fp == NULL){
+        perror("Error in Reading File");
+        exit(1);
+    }
+
+    // Send Client Name to Server
+    send(sockfd, name, NAME_LEN, 0);
+
+    // Call send_file to read file and sent to server
+    send_file(fp, sockfd);
+    printf("File Successfully Sent!\n");
+
+    fclose(fp);
+```
+
+On the `server.c` side, after accepting the connection from the client, it can start accepting files from the clients. The server will first create a new file, then when it receives the data through the TCP socket from the client, it will print the information onto the new file the server created.
+
+```C
+	void receive_file(int sockfd){
+	    int n;
+	    FILE *fp;
+	    char buffer[BUFFER_SZ];
+
+	    // Create a new file (if not pre-existing)
+	    fp = fopen("receive.txt", "w");
+	    // While data is received
+	    while(1){
+	        // Receive data through socket
+	        n = recv(sockfd, buffer, BUFFER_SZ, 0);
+	        if (n <= 0){
+	            break;
+	            return;
+	        }
+	        // Save data to file
+	        fprintf(fp, "%s", buffer);
+	        bzero(buffer, BUFFER_SZ);
+	    }
+	}
+
+	receive_file(cli->sockfd);
+    printf("File Received Successfully!\n");
+```
+
+You can view the implementation of the multi-chat room system with file transferring capabilities in [server.c](https://github.com/olincollege/SoftSysSecureSend/blob/main/src/server.c) and [client.c](https://github.com/olincollege/SoftSysSecureSend/blob/main/src/client.c).
 
 ## Project in Action
 
